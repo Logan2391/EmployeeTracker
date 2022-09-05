@@ -101,7 +101,29 @@ const viewEmployees = () => {
 }
 
 const addDepartment = () => {
+    inquirer.prompt([
+        {
+            type: 'input',
+            name: "newDep",
+            message: 'What department would you like to add?',
+            validate: function (answer) {
+                if (answer.length < 1) {
+                    return console.log("Please enter a department name.")
+                }
+                return true;
+            },
+        }
+    ])
+    .then((answer) => {
+        const sql = `INSERT INTO department (name) VALUES (?)`;
 
+        db.promise().query(sql, answer.newDep)
+        .then(([rows]) => {
+            console.table(rows);
+            viewDepartments();
+        })
+        .catch(console.log)
+    })
 }
 
 const addRole = () => {
