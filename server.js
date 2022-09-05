@@ -1,5 +1,6 @@
 const mysql = require('mysql2');
 const inquirer = require('inquirer');
+require("console.table");
 
 const db = mysql.createConnection(
     {
@@ -65,18 +66,38 @@ const viewDepartments = () => {
 
     db.promise().query(sql)
         .then(([rows]) => {
-            console.log(rows);
+            console.table(rows);
             promptUser();
         })
         .catch(console.log)
 };
 
 const viewRoles = () => {
+    const sql = `SELECT role.id, role.title, department.name AS department
+                 FROM role
+                 INNER JOIN department ON role.department_id = department.id`;
 
+    db.promise().query(sql)
+        .then(([rows]) => {
+            console.table(rows);
+            promptUser();
+        })
+        .catch(console.log)
 }
 
 const viewEmployees = () => {
+    const sql = `SELECT employee.id, CONCAT(employee.first_name, " ", employee.last_name) 
+                        AS employee_name, role.title, department.name AS department
+                        FROM employee
+                        LEFT JOIN role ON employee.role_id = role.id
+                        LEFT JOIN department ON role.department_id = department.id`;
 
+    db.promise().query(sql)
+        .then(([rows]) => {
+            console.table(rows);
+            promptUser();
+        })
+        .catch(console.log)
 }
 
 const addDepartment = () => {
