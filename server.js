@@ -2,6 +2,7 @@ const mysql = require('mysql2');
 const inquirer = require('inquirer');
 require("console.table");
 
+// Connection to the database
 const db = mysql.createConnection(
     {
         host: 'localhost',
@@ -11,6 +12,7 @@ const db = mysql.createConnection(
     },
 );
 
+//Intial prompt directory
 const promptUser = () => {
     inquirer.prompt([
         {
@@ -61,6 +63,7 @@ const promptUser = () => {
         });
 };
 
+// Facilitates the viewing of all the departments
 const viewDepartments = () => {
     const sql = `SELECT department.id AS id, department.name AS department FROM department`;
 
@@ -72,6 +75,7 @@ const viewDepartments = () => {
         .catch(console.log)
 };
 
+// Facilitates the viewing of all roles
 const viewRoles = () => {
     const sql = `SELECT role.id, role.title, role.salary, department.name AS department
                  FROM role
@@ -85,6 +89,7 @@ const viewRoles = () => {
         .catch(console.log)
 }
 
+// Facilitates the viewing of all the employees
 const viewEmployees = () => {
     const sql = `SELECT employee.id, CONCAT(employee.first_name, " ", employee.last_name)
                         AS employee_name, role.title, department.name AS department,
@@ -102,6 +107,7 @@ const viewEmployees = () => {
         .catch(console.log)
 }
 
+//function for adding a new department
 const addDepartment = () => {
     inquirer.prompt([
         {
@@ -128,6 +134,7 @@ const addDepartment = () => {
         })
 }
 
+//function for adding a new role
 const addRole = () => {
     inquirer.prompt([
         {
@@ -190,6 +197,7 @@ const addRole = () => {
 
 }
 
+//function for adding a new employee
 const addEmployee = () => {
     inquirer.prompt([
         {
@@ -300,6 +308,7 @@ const addEmployee = () => {
         })
 }
 
+//function for updating an existing employee
 const updateEmployeeRole = () => {
     const empSql = `SELECT employee.first_name, employee.last_name, id FROM employee`;
 
@@ -410,4 +419,5 @@ const updateEmployeeRole = () => {
         })
 }
 
+// Intializes the application 
 promptUser();
