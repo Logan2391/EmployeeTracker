@@ -157,12 +157,12 @@ const addRole = () => {
         }
     ])
         .then((answers) => {
-            const roleAnswers = [answers.roleName, answers.roleSalary]
-            const depSql = 'SELECT name FROM department'
+            const roleAnswers = [answers.roleName, answers.roleSalary];
+            const depSql = `SELECT name, id FROM department`;
 
             db.promise().query(depSql)
                 .then(([row]) => {
-                    let deptName = row.map(({ name }) => ({ name: name }))
+                    let deptName = row.map(({ name, id }) => ({ name: name, value: id }))
 
                     inquirer.prompt([
                         {
@@ -175,8 +175,15 @@ const addRole = () => {
                         .then((deptChoice) => {
                             const dept = deptChoice.dept;
                             roleAnswers.push(dept);
-                            
-                            const sql = 
+
+                            const sql = `INSERT INTO role (title, salary, department_id)
+                                        VALUES (?, ?, ?)`;
+
+                            db.promise().query(sql, roleAnswers)
+                                .then(() => {
+                                    viewRoles();
+                                })
+                                .catch(console.log)
                         })
                 })
         })
@@ -184,14 +191,223 @@ const addRole = () => {
 }
 
 const addEmployee = () => {
+    inquirer.prompt([
+        {
+            type: 'input',
+            name: "newEmpFN",
+            message: 'What is the new employees first name?',
+            validate: function (answer) {
+                if (answer.length < 1) {
+                    return console.log("Please enter the employees first name.")
+                }
+                return true;
+            },
+        },
+        {
+            type: 'input',
+            name: "newEmpLN",
+            message: 'What is the new employees first name?',
+            validate: function (answer) {
+                if (answer.length < 1) {
+                    return console.log("Please enter the employees last name.")
+                }
+                return true;
+            },
+        }
+    ])
+        .then((answers) => {
+            const newEmpAnswers = [answers.newEmpFN, answers.newEmpLN];
+            const roleSql = `SELECT title, id FROM role`;
 
+            db.promise().query(roleSql)
+                .then(([row]) => {
+                    let roleName = row.map(({ title, id }) => ({ name: title, value: id }))
+
+                    inquirer.prompt([
+                        {
+                            type: 'list',
+                            message: 'What role will the new employee take?',
+                            name: "newEmpRole",
+                            choices: roleName
+                        }
+                    ])
+                        .then((newEmpRoleChoice) => {
+                            const roleId = newEmpRoleChoice.newEmpRole;
+                            newEmpAnswers.push(roleId);
+                            let managerId;
+
+                            if (roleId == 1) {
+                                managerId = 3
+                            }
+
+                            if (roleId == 2) {
+                                managerId = 3
+                            }
+
+                            if (roleId == 3) {
+                                managerId = 3
+                            }
+
+                            if (roleId == 4) {
+                                managerId = 2
+                            }
+
+                            if (roleId == 5) {
+                                managerId = 2
+                            }
+
+                            if (roleId == 6) {
+                                managerId = 2
+                            }
+
+                            if (roleId == 7) {
+                                managerId = 4
+                            }
+
+                            if (roleId == 8) {
+                                managerId = 4
+                            }
+
+                            if (roleId == 9) {
+                                managerId = null
+                            }
+
+                            if (roleId == 10) {
+                                managerId = null
+                            }
+
+                            if (roleId == 11) {
+                                managerId = null
+                            }
+
+                            if (roleId == 12) {
+                                managerId = null
+                            }
+
+                            newEmpAnswers.push(managerId)
+
+                            const sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id)
+                                        VALUES (?, ?, ?, ?)`;
+
+                            db.promise().query(sql, newEmpAnswers)
+                                .then(() => {
+                                    viewEmployees();
+                                })
+                                .catch(console.log)
+
+                        })
+                })
+        })
 }
 
 const updateEmployeeRole = () => {
+    const empSql = `SELECT employee.first_name, employee.last_name, id FROM employee`;
 
+    db.promise().query(empSql)
+        .then(([row]) => {
+            let empName = row.map(({ first_name, last_name, id }) => ({ name: first_name + " " + last_name, value: id }))
+
+            inquirer.prompt([
+                {
+                    type: 'list',
+                    name: 'updEmp',
+                    message: 'Choose and employee to update their role.',
+                    choices: empName
+                }
+            ])
+                .then((updEmpChoice) => {
+                    const updateAnswers = [];
+                    const emp = updEmpChoice.updEmp
+                    const roleSql = `SELECT title, id FROM role`;
+
+                    db.promise().query(roleSql)
+                        .then(([row]) => {
+                            let roleName = row.map(({ title, id }) => ({ name: title, value: id }))
+
+                            inquirer.prompt([
+                                {
+                                    type: 'list',
+                                    message: 'What is the employees new role?',
+                                    name: "updRole",
+                                    choices: roleName
+                                }
+                            ])
+                                .then((updRoleChoice) => {
+                                    const role = updRoleChoice.updRole;
+                                    const manUpd = [];
+                                    let managerId;
+                                    updateAnswers.push(role);
+                                    updateAnswers.push(emp);
+
+                                    if (role == 1) {
+                                        managerId = 3
+                                    }
+
+                                    if (role == 2) {
+                                        managerId = 3
+                                    }
+
+                                    if (role == 3) {
+                                        managerId = 3
+                                    }
+
+                                    if (role == 4) {
+                                        managerId = 2
+                                    }
+
+                                    if (role == 5) {
+                                        managerId = 2
+                                    }
+
+                                    if (role == 6) {
+                                        managerId = 2
+                                    }
+
+                                    if (role == 7) {
+                                        managerId = 4
+                                    }
+
+                                    if (role == 8) {
+                                        managerId = 4
+                                    }
+
+                                    if (role == 9) {
+                                        managerId = null
+                                    }
+
+                                    if (role == 10) {
+                                        managerId = null
+                                    }
+
+                                    if (role == 11) {
+                                        managerId = null
+                                    }
+
+                                    if (role == 12) {
+                                        managerId = null
+                                    }
+
+                                    manUpd.push(managerId);
+                                    manUpd.push(emp);
+
+                                    const sql = `UPDATE employee SET role_id = ? WHERE id = ?`;
+                                    const manSql = `UPDATE employee SET manager_id = ? WHERE id = ?`
+
+
+                                    db.promise().query(manSql, manUpd)
+                                        .then(() => {
+                                            db.promise().query(sql, updateAnswers)
+                                                .then(() => {
+                                                    viewEmployees();
+                                                })
+                                                .catch(console.log)
+                                        })
+                                        .catch(console.log)
+
+                                })
+                        })
+                })
+        })
 }
-
-
-
 
 promptUser();
